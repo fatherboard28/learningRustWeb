@@ -1,14 +1,11 @@
-use actix_web::{get, web, App, HttpServer};
+use actix_web::{web, App, HttpServer, Responder};
 
-// this struct represents state
-struct AppState {
-    app_name: String,
+async fn index() -> impl Responder {
+    "Hello"
 }
 
-#[get("/")]
-async fn index(data: web::Data<AppState>) -> String {
-    let app_name = &data.app_name;
-    format!("Hello {app_name}!")
+async fn lol() -> impl Responder {
+    "read me daddy"
 }
 
 
@@ -16,10 +13,14 @@ async fn index(data: web::Data<AppState>) -> String {
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
-            .app_data(web::Data::new(AppState {
-                app_name: String::from("Bob sagit")
-            }))
-            .service(index)
+            .service(
+                web::scope("/app").route("/index.html", web::get().to(index)),)
+            .service(
+                web::scope("/daddy").route("/index2.html", web::get().to(lol)),)
+            //.app_data(web::Data::new(AppState {
+            //  app_name: String::from("Bob sagit")
+            //}))
+            //.service(index)
     })
     .bind(("127.0.0.1", 8080))?
     .run()
